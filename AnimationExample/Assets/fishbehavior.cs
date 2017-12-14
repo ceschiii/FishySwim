@@ -11,6 +11,9 @@ public class fishbehavior : MonoBehaviour
     private float startTime;
     private float journeyLength;
 
+    public float turnDuration = 2;
+    private Vector3 startingAngle;
+    private Vector3 targetAngle;
     void Start()
     {
     }
@@ -24,8 +27,15 @@ public class fishbehavior : MonoBehaviour
             currentFood = GameObject.Find("fishfood");
             if (currentFood != null)
             {
+                //init move info for a new target
                 startTime = Time.time;
                 journeyLength = Vector3.Distance(transform.position, currentFood.transform.position);
+
+                //init rotation info for a new target
+                Vector3 vectorToTarget = ((currentFood.transform.position) - transform.position).normalized;
+                float angleToTarget = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x); //this will be in radians
+                startingAngle = transform.localEulerAngles;
+                targetAngle = new Vector3(0, 0, angleToTarget * Mathf.Rad2Deg - 45);
             }
         }
         if(currentFood != null)
@@ -37,7 +47,7 @@ public class fishbehavior : MonoBehaviour
             //float rotation_z = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
             //transform.rotation = Quaternion.Euler(0f, 0f, rotation_z);
 
-
+            //Lerp position
             float distCovered = (Time.time - startTime) * moveSpeed;
             float fracJourney = distCovered / journeyLength;
             transform.position = Vector3.Lerp(transform.position, currentFood.transform.position, fracJourney);
@@ -49,11 +59,16 @@ public class fishbehavior : MonoBehaviour
             //      var rotation = Quaternion.LookRotation(lookPos);
             //      transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * damping);
 
-            Vector3 targetPostition = new Vector3(currentFood.transform.position.z,
-                                     0,
-                                     0);
-            this.transform.LookAt(targetPostition);
+            //Lerp rotation
+            float rotationCovered = (Time.time - startTime) ;
+            float interpolated = rotationCovered / turnDuration;
+            transform.localEulerAngles = Vector3.Lerp(startingAngle, targetAngle, interpolated);
 
+            /** Working snap rotation code
+            Vector3 vectorToTarget = ((currentFood.transform.position) - transform.position).normalized;
+            float angleToTarget = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x); //this will be in radians
+            transform.localEulerAngles = new Vector3(0, 0, angleToTarget * Mathf.Rad2Deg - 45); //might need some offset like 90 depending on your sprite```
+            */
 
 
         }
