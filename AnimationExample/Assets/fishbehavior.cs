@@ -10,6 +10,7 @@ public class fishbehavior : MonoBehaviour
     GameObject currentFood = null;
     private float startTime;
     private float journeyLength;
+    public GameObject bubblePrefab;
 
     public float turnDuration = 2;
     private Vector3 startingAngle;
@@ -92,6 +93,9 @@ public class fishbehavior : MonoBehaviour
         {
             if (Vector3.Distance(transform.position, currentFood.transform.position) < 0.5f)
             {
+                Vector3 bubbleDifference = new Vector3(0, 0, 0.1f);
+                GameObject bubble = (GameObject)Instantiate(bubblePrefab, currentFood.transform.position + bubbleDifference, transform.rotation);
+                bubble.name = "fishbubbles";
                 GameObject.Destroy(currentFood);
                 currentFood = null;
             }
